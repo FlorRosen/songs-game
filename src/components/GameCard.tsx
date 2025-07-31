@@ -1,20 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import songsData from '@/data/songs.json';
 
-interface GameCardProps {
+interface Song {
   lyric: string;
-  nextLyric: string;
+  next_lyric: string;
   song: string;
   artist: string;
 }
 
-export default function GameCard({ lyric, nextLyric, song, artist }: GameCardProps) {
+export default function GameCard() {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+
+  // Function to get a random song
+  const getRandomSong = () => {
+    const randomIndex = Math.floor(Math.random() * songsData.length);
+    return songsData[randomIndex];
+  };
+
+  // Initialize with a random song
+  useEffect(() => {
+    setCurrentSong(getRandomSong());
+  }, []);
 
   const handleCardClick = () => {
     setIsFlipped(!isFlipped);
+    
+    // Change to a new random song after the flip animation completes
+    setTimeout(() => {
+      setCurrentSong(getRandomSong());
+    }, 350); // Half of the 700ms animation duration
   };
+
+  // Don't render until we have a song
+  if (!currentSong) {
+    return (
+      <div className="w-80 h-96 rounded-2xl shadow-2xl bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center">
+        <div className="text-white text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -36,7 +63,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              &ldquo;{lyric}&rdquo;
+              &ldquo;{currentSong.lyric}&rdquo;
             </p>
           </div>
 
@@ -46,7 +73,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               NEXT LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              &ldquo;{nextLyric}&rdquo;
+              &ldquo;{currentSong.next_lyric}&rdquo;
             </p>
           </div>
 
@@ -56,7 +83,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               SONG
             </h2>
             <p className="text-lg leading-relaxed">
-              &ldquo;{song}&rdquo; by {artist}
+              &ldquo;{currentSong.song}&rdquo; by {currentSong.artist}
             </p>
           </div>
         </div>
@@ -75,7 +102,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              &ldquo;{lyric}&rdquo;
+              &ldquo;{currentSong.lyric}&rdquo;
             </p>
           </div>
 
@@ -85,7 +112,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               NEXT LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              &ldquo;{nextLyric}&rdquo;
+              &ldquo;{currentSong.next_lyric}&rdquo;
             </p>
           </div>
 
@@ -95,7 +122,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               SONG
             </h2>
             <p className="text-lg leading-relaxed">
-              &ldquo;{song}&rdquo; by {artist}
+              &ldquo;{currentSong.song}&rdquo; by {currentSong.artist}
             </p>
           </div>
         </div>
