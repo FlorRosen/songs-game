@@ -7,12 +7,7 @@ export default function GamePage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-gradient-to-br from-[#f2f6d0] via-[#d0e1d4] to-[#d9d2b6]">
       <div className="relative">
-        <GameCard 
-          lyric="Some of them want to use you"
-          nextLyric="Some of them want to get used by you"
-          song="Sweet Dreams"
-          artist="Eurythmics"
-        />
+        <GameCard />
 
         {/* Back to Home Button */}
         <div className="mt-8 text-center">
