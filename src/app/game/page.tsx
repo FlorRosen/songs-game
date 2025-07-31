@@ -13,7 +13,7 @@ export default function GamePage() {
         <div className="mt-8 text-center">
           <Link 
             href="/" 
-            className="inline-block bg-white/20 backdrop-blur-sm hover:bg-white/30 text-gray-100 font-semibold py-3 px-6 rounded-full transition-all duration-300 transform hover:scale-105"
+            className="inline-block bg-white/30 backdrop-blur-sm hover:bg-white/40 text-[#71697a] font-medium py-2 px-6 rounded-full text-base transition-all duration-300 transform hover:scale-102 border border-white/20"
           >
             ← Back to Home
           </Link>
