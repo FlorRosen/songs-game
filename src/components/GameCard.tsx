@@ -36,7 +36,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              "{lyric}"
+              &ldquo;{lyric}&rdquo;
             </p>
           </div>
 
@@ -46,7 +46,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               NEXT LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              "{nextLyric}"
+              &ldquo;{nextLyric}&rdquo;
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               SONG
             </h2>
             <p className="text-lg leading-relaxed">
-              "{song}" by {artist}
+              &ldquo;{song}&rdquo; by {artist}
             </p>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              "{lyric}"
+              &ldquo;{lyric}&rdquo;
             </p>
           </div>
 
@@ -85,7 +85,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               NEXT LYRIC
             </h2>
             <p className="text-lg leading-relaxed">
-              "{nextLyric}"
+              &ldquo;{nextLyric}&rdquo;
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default function GameCard({ lyric, nextLyric, song, artist }: GameCardPro
               SONG
             </h2>
             <p className="text-lg leading-relaxed">
-              "{song}" by {artist}
+              &ldquo;{song}&rdquo; by {artist}
             </p>
           </div>
         </div>
