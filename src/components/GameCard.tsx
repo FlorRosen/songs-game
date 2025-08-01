@@ -72,27 +72,11 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     }
   }, [availableSongIndices]);
 
-  const handleCardClick = () => {
-    setIsFlipped(!isFlipped);
-    
-    // Change to a new random song after the flip animation completes
-    setTimeout(() => {
-      const nextCardNumber = currentCardNumber + 1;
-      if (nextCardNumber > maxCards) {
-        setIsGameOver(true);
-        onGameOver();
-      } else {
-        setCurrentCardNumber(nextCardNumber);
-        setCurrentSong(getRandomSong());
-      }
-    }, 350); // Half of the 700ms animation duration
-  };
 
   const handlePlayerSelect = (playerIndex: number) => {
-    if (!showNextButton) {
-      setSelectedPlayer(playerIndex);
-      setShowNextButton(true);
-    }
+    setSelectedPlayer(playerIndex);
+    setShowNextButton(true);
+    setNoOnePressed(false); // Reset "no one guessed" state when selecting a player
   };
 
   const handleNextCard = () => {
@@ -123,10 +107,9 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
   };
 
   const handleNoOneGuessed = () => {
-    if (!showNextButton) {
-      setNoOnePressed(true);
-      setShowNextButton(true);
-    }
+    setNoOnePressed(true);
+    setShowNextButton(true);
+    setSelectedPlayer(null); // Reset player selection when "no one guessed" is pressed
   };
 
   // Render game over screen
@@ -154,10 +137,10 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
 
         {/* Game Card */}
         <div 
-          className={`w-80 h-96 rounded-2xl shadow-2xl cursor-pointer transition-transform duration-700 transform-style-preserve-3d perspective-1000 ${
+          className={`w-80 h-96 rounded-2xl shadow-2xl transition-transform duration-700 transform-style-preserve-3d perspective-1000 ${
             isFlipped ? 'rotate-y-180' : ''
           }`}
-          onClick={handleCardClick}
+
         >
           {/* Front of Card */}
           <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-blue-500 rounded-2xl p-8 flex flex-col justify-between backface-hidden">
