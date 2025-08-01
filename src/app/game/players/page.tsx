@@ -21,7 +21,7 @@ export default function PlayersPage() {
       // Store players in localStorage
       localStorage.setItem('gamePlayers', JSON.stringify(validPlayers));
       localStorage.setItem('playerScores', JSON.stringify(validPlayers.map(() => 0)));
-      router.push('/game');
+      router.push('/game/size');
     }
   };
 

@@ -26,6 +26,8 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
   const [noOnePressed, setNoOnePressed] = useState(false);
   const [availableSongIndices, setAvailableSongIndices] = useState<number[]>([]);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [currentCardNumber, setCurrentCardNumber] = useState(1);
+  const [maxCards, setMaxCards] = useState(songsData.length);
 
 
   // Function to reset available songs
@@ -36,11 +38,10 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
 
   // Function to get a random song from available songs
   const getRandomSong = () => {
-    // If no songs are available, end the game
+    // If no more songs available, end game
     if (availableSongIndices.length === 0) {
       setIsGameOver(true);
       onGameOver();
-
       return null;
     }
 
@@ -54,8 +55,12 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     return songsData[songIndex];
   };
 
-  // Initialize available songs
+  // Initialize available songs and game size
   useEffect(() => {
+    const gameSize = localStorage.getItem('gameSize');
+    if (gameSize) {
+      setMaxCards(parseInt(gameSize));
+    }
     resetAvailableSongs();
   }, []);
 
@@ -71,7 +76,14 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     
     // Change to a new random song after the flip animation completes
     setTimeout(() => {
-      setCurrentSong(getRandomSong());
+      const nextCardNumber = currentCardNumber + 1;
+      if (nextCardNumber > maxCards) {
+        setIsGameOver(true);
+        onGameOver();
+      } else {
+        setCurrentCardNumber(nextCardNumber);
+        setCurrentSong(getRandomSong());
+      }
     }, 350); // Half of the 700ms animation duration
   };
 
@@ -92,7 +104,14 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     
     // Change to a new random song after the flip animation completes
     setTimeout(() => {
-      setCurrentSong(getRandomSong());
+      const nextCardNumber = currentCardNumber + 1;
+      if (nextCardNumber > maxCards) {
+        setIsGameOver(true);
+        onGameOver();
+      } else {
+        setCurrentCardNumber(nextCardNumber);
+        setCurrentSong(getRandomSong());
+      }
     }, 350);
   };
 
@@ -110,7 +129,14 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     
     // Change to a new random song after the flip animation completes
     setTimeout(() => {
-      setCurrentSong(getRandomSong());
+      const nextCardNumber = currentCardNumber + 1;
+      if (nextCardNumber > maxCards) {
+        setIsGameOver(true);
+        onGameOver();
+      } else {
+        setCurrentCardNumber(nextCardNumber);
+        setCurrentSong(getRandomSong());
+      }
     }, 350);
   };
 
@@ -130,6 +156,13 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
 
   return (
     <div className="flex flex-col items-center">
+        {/* Progress indicator */}
+        <div className="mb-4 text-center">
+          <span className="text-[#71697a] font-medium">
+            Card {currentCardNumber} of {maxCards}
+          </span>
+        </div>
+
         {/* Game Card */}
         <div 
           className={`w-80 h-96 rounded-2xl shadow-2xl cursor-pointer transition-transform duration-700 transform-style-preserve-3d perspective-1000 ${
