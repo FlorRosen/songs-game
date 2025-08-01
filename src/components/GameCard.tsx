@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import songsData from '@/data/songs.json';
+import ScoreCard from './ScoreCard';
+import PlayerSelector from './PlayerSelector';
 
 interface Song {
   lyric: string;
@@ -13,32 +15,56 @@ interface Song {
 interface GameCardProps {
   players: string[];
   onPlayerScore: (playerIndex: number) => void;
+  scores: number[];
+  onGameOver: () => void;
 }
 
-export default function GameCard({ players, onPlayerScore }: GameCardProps) {
+export default function GameCard({ players, onPlayerScore, scores, onGameOver }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [scores, setScores] = useState<number[]>([]);
   const [pressedPlayer, setPressedPlayer] = useState<number | null>(null);
   const [noOnePressed, setNoOnePressed] = useState(false);
+  const [availableSongIndices, setAvailableSongIndices] = useState<number[]>([]);
+  const [isGameOver, setIsGameOver] = useState(false);
 
-  // Function to get a random song
-  const getRandomSong = () => {
-    const randomIndex = Math.floor(Math.random() * songsData.length);
-    return songsData[randomIndex];
+
+  // Function to reset available songs
+  const resetAvailableSongs = () => {
+    const indices = Array.from({ length: songsData.length }, (_, i) => i);
+    setAvailableSongIndices(indices);
   };
 
-  // Initialize with a random song and load scores
-  useEffect(() => {
-    setCurrentSong(getRandomSong());
-    
-    // Load scores from localStorage
-    const storedScores = localStorage.getItem('playerScores');
-    
-    if (storedScores) {
-      setScores(JSON.parse(storedScores));
+  // Function to get a random song from available songs
+  const getRandomSong = () => {
+    // If no songs are available, end the game
+    if (availableSongIndices.length === 0) {
+      setIsGameOver(true);
+      onGameOver();
+
+      return null;
     }
+
+    // Get a random index from available songs
+    const randomAvailableIndex = Math.floor(Math.random() * availableSongIndices.length);
+    const songIndex = availableSongIndices[randomAvailableIndex];
+
+    // Remove the used index from available songs
+    setAvailableSongIndices(prev => prev.filter((_, i) => i !== randomAvailableIndex));
+
+    return songsData[songIndex];
+  };
+
+  // Initialize available songs
+  useEffect(() => {
+    resetAvailableSongs();
   }, []);
+
+  // Set initial song after availableSongIndices is initialized
+  useEffect(() => {
+    if (availableSongIndices.length > 0 && !currentSong) {
+      setCurrentSong(getRandomSong());
+    }
+  }, [availableSongIndices]);
 
   const handleCardClick = () => {
     setIsFlipped(!isFlipped);
@@ -87,6 +113,11 @@ export default function GameCard({ players, onPlayerScore }: GameCardProps) {
       setCurrentSong(getRandomSong());
     }, 350);
   };
+
+  // Render game over screen
+  if (isGameOver) {
+    return <ScoreCard players={players} scores={scores} />;
+  }
 
   // Don't render until we have a song
   if (!currentSong) {
@@ -186,40 +217,13 @@ export default function GameCard({ players, onPlayerScore }: GameCardProps) {
         </div>
 
                 {/* Player Buttons - Always active */}
-        <div className="mt-6">
-          <h3 className="text-sm font-medium text-[#71697a] mb-3 text-center opacity-80">
-            Who guessed it?
-          </h3>
-          <div className="flex flex-wrap justify-center gap-2 mb-4 px-4">
-            {players.map((player, index) => (
-              <button
-                key={index}
-                onClick={() => handlePlayerScore(index)}
-                className={`w-24 py-2 px-3 rounded-lg transition-all duration-300 text-sm font-bold cursor-pointer transform hover:scale-105 ${
-                  pressedPlayer === index
-                    ? 'bg-gradient-to-r from-[#f2f6d0] to-[#d0e1d4] text-[#71697a] shadow-md scale-105'
-                    : 'bg-gradient-to-r from-[#f2f6d0] to-[#d0e1d4] text-[#71697a]'
-                }`}
-              >
-                <span title={player} className="block truncate">
-                  {player}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <button
-              onClick={handleNoOneGuessed}
-              className={`w-48 py-2 px-4 rounded-lg transition-all duration-300 border text-sm font-medium ${
-                noOnePressed
-                  ? 'bg-white/50 text-[#71697a] shadow-md scale-105 border-white/40'
-                  : 'bg-white/30 hover:bg-white/40 text-[#71697a] border-white/20'
-              }`}
-            >
-              No one guessed
-            </button>
-          </div>
-        </div>
+        <PlayerSelector
+          players={players}
+          onPlayerScore={handlePlayerScore}
+          onNoOneGuessed={handleNoOneGuessed}
+          pressedPlayer={pressedPlayer}
+          noOnePressed={noOnePressed}
+        />
       </div>
     );
   } 
