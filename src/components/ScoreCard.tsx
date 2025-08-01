@@ -17,6 +17,7 @@ interface ScoreCardProps {
 
 export default function ScoreCard({ players, scores }: ScoreCardProps) {
   const [showWinnerAnimation, setShowWinnerAnimation] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const ANIMATION_DELAY_PER_PLAYER = 400; // ms between each player's animation
 
   const fireworks = () => {
@@ -63,7 +64,10 @@ export default function ScoreCard({ players, scores }: ScoreCardProps) {
   };
 
   useEffect(() => {
-    // Start animation after a brief delay
+    // Start fade-in animation immediately
+    setIsVisible(true);
+    
+    // Start winner animation after a brief delay
     const timer = setTimeout(() => {
       setShowWinnerAnimation(true);
       // Launch fireworks when showing the winner
@@ -87,7 +91,7 @@ export default function ScoreCard({ players, scores }: ScoreCardProps) {
   const sortedPlayers = getSortedPlayerScores();
 
   return (
-    <div className="w-[32rem] mx-4 my-8 rounded-2xl shadow-2xl bg-gradient-to-br from-[#f2f6d0] to-[#d0e1d4] p-8">
+    <div className={`w-[32rem] mx-4 my-8 rounded-2xl shadow-2xl bg-gradient-to-br from-[#f2f6d0] to-[#d0e1d4] p-8 ${isVisible ? 'animate-[fadeInScale_0.7s_ease-out_forwards]' : 'opacity-0 scale-95'}`}>
       <h2 className="text-2xl font-bold text-center text-[#71697a] mb-8 opacity-0 animate-[fadeIn_0.5s_ease-out_0.2s_forwards]">
         ¡End of game!
       </h2>

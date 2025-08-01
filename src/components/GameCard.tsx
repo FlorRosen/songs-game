@@ -27,6 +27,7 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
   const [noOnePressed, setNoOnePressed] = useState(false);
   const [availableSongIndices, setAvailableSongIndices] = useState<number[]>([]);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentCardNumber, setCurrentCardNumber] = useState(1);
   const [maxCards, setMaxCards] = useState(songsData.length);
 
@@ -97,8 +98,12 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     setTimeout(() => {
       const nextCardNumber = currentCardNumber + 1;
       if (nextCardNumber > maxCards) {
-        setIsGameOver(true);
-        onGameOver();
+        // Start transition to score screen
+        setIsTransitioning(true);
+        setTimeout(() => {
+          setIsGameOver(true);
+          onGameOver();
+        }, 500); // Wait for fade out animation
       } else {
         setCurrentCardNumber(nextCardNumber);
         setCurrentSong(getRandomSong());
@@ -127,7 +132,7 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={`flex flex-col items-center transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
         {/* Progress indicator */}
         <div className="mb-4 text-center">
           <span className="text-[#71697a] font-medium">
