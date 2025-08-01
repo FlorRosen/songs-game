@@ -22,7 +22,8 @@ interface GameCardProps {
 export default function GameCard({ players, onPlayerScore, scores, onGameOver }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
-  const [pressedPlayer, setPressedPlayer] = useState<number | null>(null);
+  const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+  const [showNextButton, setShowNextButton] = useState(false);
   const [noOnePressed, setNoOnePressed] = useState(false);
   const [availableSongIndices, setAvailableSongIndices] = useState<number[]>([]);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -87,19 +88,25 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
     }, 350); // Half of the 700ms animation duration
   };
 
-  const handlePlayerScore = (playerIndex: number) => {
-    // Show pressed effect
-    setPressedPlayer(playerIndex);
+  const handlePlayerSelect = (playerIndex: number) => {
+    if (!showNextButton) {
+      setSelectedPlayer(playerIndex);
+      setShowNextButton(true);
+    }
+  };
+
+  const handleNextCard = () => {
+    // Only update score if a player was selected (not for "no one guessed")
+    if (selectedPlayer !== null && !noOnePressed) {
+      onPlayerScore(selectedPlayer);
+    }
     
-    // Call the parent function to update scores
-    onPlayerScore(playerIndex);
+    // Reset states
+    setSelectedPlayer(null);
+    setShowNextButton(false);
+    setNoOnePressed(false);
     
-    // Remove pressed effect after 500ms
-    setTimeout(() => {
-      setPressedPlayer(null);
-    }, 500);
-    
-    // Move to next card after scoring
+    // Move to next card
     setIsFlipped(!isFlipped);
     
     // Change to a new random song after the flip animation completes
@@ -116,28 +123,10 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
   };
 
   const handleNoOneGuessed = () => {
-    // Show pressed effect
-    setNoOnePressed(true);
-    
-    // Remove pressed effect after 500ms
-    setTimeout(() => {
-      setNoOnePressed(false);
-    }, 500);
-    
-    // No points awarded, just move to next card
-    setIsFlipped(!isFlipped);
-    
-    // Change to a new random song after the flip animation completes
-    setTimeout(() => {
-      const nextCardNumber = currentCardNumber + 1;
-      if (nextCardNumber > maxCards) {
-        setIsGameOver(true);
-        onGameOver();
-      } else {
-        setCurrentCardNumber(nextCardNumber);
-        setCurrentSong(getRandomSong());
-      }
-    }, 350);
+    if (!showNextButton) {
+      setNoOnePressed(true);
+      setShowNextButton(true);
+    }
   };
 
   // Render game over screen
@@ -250,13 +239,27 @@ export default function GameCard({ players, onPlayerScore, scores, onGameOver }:
         </div>
 
                 {/* Player Buttons - Always active */}
-        <PlayerSelector
-          players={players}
-          onPlayerScore={handlePlayerScore}
-          onNoOneGuessed={handleNoOneGuessed}
-          pressedPlayer={pressedPlayer}
-          noOnePressed={noOnePressed}
-        />
+        <div className="flex flex-col items-center gap-4">
+          <PlayerSelector
+            players={players}
+            onPlayerScore={handlePlayerSelect}
+            onNoOneGuessed={handleNoOneGuessed}
+            pressedPlayer={selectedPlayer}
+            noOnePressed={noOnePressed}
+          />
+          
+          {/* Next Card button container with fixed height */}
+          <div className="h-12 flex items-center justify-center">
+            {showNextButton && (
+              <button
+                onClick={handleNextCard}
+                className="bg-gradient-to-r from-[#71697a] to-[#d9d2b6] text-white font-medium py-2 px-6 rounded-full text-base transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl backdrop-blur-sm"
+              >
+                Next Card →
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     );
   } 

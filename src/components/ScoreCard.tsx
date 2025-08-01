@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import confetti from 'canvas-confetti';
 
 interface PlayerScore {
   name: string;
@@ -18,12 +19,61 @@ export default function ScoreCard({ players, scores }: ScoreCardProps) {
   const [showWinnerAnimation, setShowWinnerAnimation] = useState(false);
   const ANIMATION_DELAY_PER_PLAYER = 400; // ms between each player's animation
 
+  const fireworks = () => {
+    const colors = ['#FFD700', '#FFA500', '#FF6347']; // Warm and soft colors
+    const particleCount = 50; // Moderate amount of particles
+
+    // Fireworks sequence helper function
+    const launchFirework = (x: number, delay: number) => {
+      setTimeout(() => {
+        confetti({
+          particleCount,
+          spread: 70,
+          origin: { x, y: 0.5 },
+          colors,
+          startVelocity: 30,
+          gravity: 0.5,
+          scalar: 0.7,
+          ticks: 150
+        });
+      }, delay);
+    };
+
+    // First round
+    launchFirework(0.2, 0);    // Left
+    launchFirework(0.8, 300);  // Right
+
+    // Second round
+    launchFirework(0.3, 600);  // Left center
+    launchFirework(0.7, 900);  // Right center
+
+    // Final round
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        spread: 100,
+        origin: { x: 0.5, y: 0.5 },
+        colors,
+        startVelocity: 35,
+        gravity: 0.4,
+        scalar: 0.8,
+        ticks: 200
+      });
+    }, 1500);
+  };
+
   useEffect(() => {
-    // Iniciar animación después de un breve delay
-    setTimeout(() => setShowWinnerAnimation(true), 500);
+    // Start animation after a brief delay
+    const timer = setTimeout(() => {
+      setShowWinnerAnimation(true);
+      // Launch fireworks when showing the winner
+      fireworks();
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
-  // Función para obtener jugadores ordenados por puntaje
+  // Get players sorted by score
   const getSortedPlayerScores = (): PlayerScore[] => {
     return players
       .map((name, index) => ({
