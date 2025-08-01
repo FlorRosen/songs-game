@@ -40,7 +40,7 @@ export default function InstructionsPage() {
             href="/game/players" 
             className="inline-block bg-gradient-to-r from-[#f2f6d0] to-[#d0e1d4] hover:from-[#d0e1d4] hover:to-[#d9d2b6] text-[#71697a] font-bold py-3 px-6 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
-            Start Playing!
+            Start playing
           </Link>
           
           <Link 
